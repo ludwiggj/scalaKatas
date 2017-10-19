@@ -1,4 +1,5 @@
 Scala Katas
 
-* [a relative link](mixtures/README.md)
-* [another relative link](mixtures)
+A (potential) series of katas, all implemented in scala. Lovely....
+
+* [Mixtures (for Harry Potter fans)](mixtures)
