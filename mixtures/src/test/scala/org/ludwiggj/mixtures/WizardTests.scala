@@ -34,6 +34,15 @@ object WizardTests extends TestSuite {
           smoke ==> 2400
           smoke
         }
+
+      }
+
+      "five mixtures" - {
+        "least smoky for (10, 85, 30, 60, 5)" - {
+          smoke = Wizard.optimumMix(Seq(10, 85, 30, 60, 5))
+          smoke ==> 4625
+          smoke
+        }
       }
     }
   }
