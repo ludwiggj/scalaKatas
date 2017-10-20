@@ -2,7 +2,6 @@ package org.ludwiggj.mixtures
 
 object Wizard {
 
-  def mix(mixtures: Seq[Int]) = {
     /*
 
     When mixing two mixtures of colors a and b, the resulting mixture will have the color (a+b) mod 100.
@@ -20,16 +19,29 @@ object Wizard {
        So acc should be (0, 0)
     */
 
+  val correctMixer = (x: Int, y: Int) => (x + y) % 100
+
+  def mix(mixtures: Seq[Int], mixer: (Int, Int) => Int = correctMixer): Int = {
     val potion = mixtures.foldLeft(0, 0) {
-      case ((potionMixture, smoke), mixture) => ((potionMixture + mixture) % 100, smoke + (potionMixture * mixture))
+      case ((potionMixture, smoke), mixture) => (mixer(potionMixture, mixture), smoke + (potionMixture * mixture))
     }
     potion._2
   }
 
-  // Naive implementation
-  def optimumMix(mixtures: Seq[Int]): Int = {
+  // Naive implementation that does not scale
+  private def allMixes(mixtures: Seq[Int], mixer: (Int, Int) => Int = correctMixer): Iterator[Int] = {
     mixtures.permutations.map {
-      mix(_)
-    }.min
+      mix(_, mixer)
+    }
+  }
+
+  def optimumMix(mixtures: Seq[Int]): Int = {
+    allMixes(mixtures).min
+  }
+
+  def mixProperties(mixtures: Seq[Int], mixer: (Int, Int) => Int): (Int, Int, Int, Int) = {
+    val smokes = allMixes(mixtures, mixer).toList
+
+    (smokes.min, smokes.max, smokes.size, smokes.distinct.size)
   }
 }
