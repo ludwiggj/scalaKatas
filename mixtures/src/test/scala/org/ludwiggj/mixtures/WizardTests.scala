@@ -64,7 +64,6 @@ object WizardTests extends TestSuite {
         val (min, max, combinations, unique) = Wizard.mixProperties(mixtures, mixer)
         println(s"min [$min] max [$max] combinations [$combinations] ... of which unique [$unique]")
         min ==> max
-        unique ==> 1
         (min, max, unique)
       }
 
@@ -72,6 +71,10 @@ object WizardTests extends TestSuite {
 
         "four mixtures (1 to 4)" - {
           checkProperties(1 to 4 toList)
+        }
+
+        "four mixtures (10, 20, 30, 40)" - {
+          checkProperties(10 to 40 by 10 toList)
         }
 
         "five mixtures (1 to 5)" - {
@@ -101,6 +104,10 @@ object WizardTests extends TestSuite {
 
         "four mixtures (1 to 4)" - {
           checkProperties(1 to 4 toList, newMixingAlgorithm)
+        }
+
+        "four mixtures (10, 20, 30, 40)" - {
+          checkProperties(10 to 40 by 10 toList)
         }
 
         "five mixtures (1 to 5)" - {
