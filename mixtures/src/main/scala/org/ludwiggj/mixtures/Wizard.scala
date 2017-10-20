@@ -2,10 +2,6 @@ package org.ludwiggj.mixtures
 
 object Wizard {
 
-  def optimumMix(mixtures: Seq[Int]): Int = {
-    mix(mixtures)
-  }
-
   def mix(mixtures: Seq[Int]) = {
     /*
 
@@ -28,5 +24,12 @@ object Wizard {
       case ((potionMixture, smoke), mixture) => ((potionMixture + mixture) % 100, smoke + (potionMixture * mixture))
     }
     potion._2
+  }
+
+  // Naive implementation
+  def optimumMix(mixtures: Seq[Int]): Int = {
+    mixtures.permutations.map {
+      mix(_)
+    }.min
   }
 }
