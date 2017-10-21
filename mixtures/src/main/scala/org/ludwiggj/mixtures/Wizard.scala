@@ -2,34 +2,59 @@ package org.ludwiggj.mixtures
 
 object Wizard {
 
-  def mix(mixtures: Seq[Int]) = {
-    /*
+  //  def mix(mixtures: Seq[Int]) = {
+  //    val potion = mixtures.foldLeft(0, 0) {
+  //      case ((potionMixture, smoke), mixture) => ((potionMixture + mixture) % 100, smoke + (potionMixture * mixture))
+  //    }
+  //    potion._2
+  //  }
 
-    When mixing two mixtures of colors a and b, the resulting mixture will have the color (a+b) mod 100.
-    Also, there will be some smoke in the process. The amount of smoke generated when mixing two mixtures
-    of colors a and b is a*b.
+  def mix(mixtures: List[Int]): Int = {
+    println(s"+++ Mixtures $mixtures +++")
+    mixtures match {
+      case Nil => -1
+      case mixture :: Nil => mixture
+      case mixtureList => {
+        val list =
+        {
+          (0 to mixtureList.size - 2).toList map { i =>
+            val leadingMixtures = mixtureList take i
+            val thisMix = (mixtureList(i) + mixtureList(i + 1)) % 100
+            val trailingMixtures = mixtureList drop i + 2
 
-    Example potion of mixtures (40 60 20)
+            println(s">>>>>> Processing [$leadingMixtures, (${mixtureList(i)} + ${mixtureList(i + 1)}), $trailingMixtures] <<<")
+            mix(leadingMixtures ++ List(thisMix) ++ trailingMixtures)
+          }
+        }
 
-          acc (Acc_m, Acc_s) mix 40 => Mix Acc_m + 40 / 100, Smoke Acc_m * 40 => (40, 0)
-                     (40, 0) mix 60 => Mix 40 + 60 / 100, Smoke 40 * 60       => (0, 2400)
-                   (0, 2400) mix 20 => Mix  0 + 20 / 100, Smoke  0 * 20       => (20, 2400 + 0)
-
-                           a mix b  => Mix a + b / 100, Smoke a * b
-
-       So acc should be (0, 0)
-    */
-
-    val potion = mixtures.foldLeft(0, 0) {
-      case ((potionMixture, smoke), mixture) => ((potionMixture + mixture) % 100, smoke + (potionMixture * mixture))
+        println(s"--------- Results $list ---")
+        list.min
+      }
     }
-    potion._2
-  }
-
-  // Naive implementation
-  def optimumMix(mixtures: Seq[Int]): Int = {
-    mixtures.permutations.map {
-      mix(_)
-    }.min
   }
 }
+
+//        val nextStepSublists = mixtures.sliding(2, 1).toList.zipWithIndex map {
+//          case (pairList, index) =>
+//            (mixtureList take index, (pairList(0), pairList(1)), mixtureList drop (index + 2))
+//        }
+//        println(s">>>>>>>>>>>> Sublists $nextStepSublists <<<")
+//        val mixes = nextStepSublists.map {
+//          case (first, pair, last) => {
+//            mix((first :+ ((pair._1 + pair._2) % 100)) ++ last)
+//          }
+//        }
+
+//l.sliding (2, 1).toList.zipWithIndex
+//
+//val kahuna2 = z map {
+//  case (pair, index) =>
+//  | (l take index, pair, l drop (index + 2) )
+//  |
+//}
+//
+//  kahuna2 map {
+//  x =>
+//  | x._1 ++ x._2 ++ x._3
+//  |
+//}
