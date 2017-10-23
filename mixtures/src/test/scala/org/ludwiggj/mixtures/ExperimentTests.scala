@@ -7,9 +7,11 @@ object ExperimentTests extends TestSuite {
 
     "experiment tests" - {
 
-      val experiment1 = Experiment(List(1, 2), 0)
-      val experiment2 = Experiment(List(), 0)
-      val experiment3 = Experiment(List(20, 40, 60), 800)
+      val pocketBook = new PocketBook()
+
+      val experiment1 = Experiment(List(1, 2), pocketBook, 0)
+      val experiment2 = Experiment(List(), pocketBook, 0)
+      val experiment3 = Experiment(List(20, 40, 60), pocketBook, 800)
       val experiments = List(experiment1, experiment2, experiment3)
 
 
@@ -20,7 +22,7 @@ object ExperimentTests extends TestSuite {
       }
 
       "does not contain mismatches" - {
-        experiments.contains(Experiment(List(2,4,6), 8)) ==> false
+        experiments.contains(Experiment(List(2,4,6), pocketBook, 8)) ==> false
       }
     }
   }
