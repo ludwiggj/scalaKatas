@@ -1,19 +1,22 @@
-import akka.actor.{ActorSystem, ActorLogging, Actor, Props}
+import akka.actor.{ActorSystem, Props}
+import java.util.concurrent.TimeUnit._
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
-case object Pint
+case object Ticket
 
-class Person extends Actor with ActorLogging {
-  def receive = {
-    case Pint => log.info("Thanks for the pint")
-  }
-}
+case object FullPint
+
+case object EmptyPint
 
 object HowdyAkka extends App {
   val system = ActorSystem("howdy-akka")
 
+  val zed = system.actorOf(Props(new BarTender), "zed")
+
   val alice = system.actorOf(Props(new Person), "alice")
 
-  alice ! Pint
+  zed.tell(Ticket, alice)
 
-  system.terminate()
+  Await.ready(system.whenTerminated, Duration(1, MINUTES))
 }
