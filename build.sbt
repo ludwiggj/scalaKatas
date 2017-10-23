@@ -21,3 +21,11 @@ lazy val mixtures = project
     libraryDependencies += utest,
     testFrameworks += new TestFramework("utest.runner.Framework")
   )
+
+lazy val akkaNoodling = project
+  .settings(
+    commonSettings,
+    name := "Akka Noodling",
+    libraryDependencies += utest,
+    testFrameworks += new TestFramework("utest.runner.Framework")
+  )
