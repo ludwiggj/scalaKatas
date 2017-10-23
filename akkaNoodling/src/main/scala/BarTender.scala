@@ -1,19 +1,35 @@
 import akka.actor.{Actor, ActorLogging}
 
 class BarTender extends Actor with ActorLogging {
+  var total = 0
+
   def receive = {
-    case Ticket =>
-      log.info("1 pint coming right up")
+    case Ticket(quantity) =>
+      total = total + quantity
 
-      Thread.sleep(1000)
+      log.info(s"I'll get $quantity pints for [${sender.path}]")
 
-      log.info("Your pint is ready, here you go")
+      for (number <- 1 to quantity) {
+        log.info(s"Pint $number is coming right up for [${sender.path}]")
 
-      sender ! FullPint
+        Thread.sleep(1000)
 
-    case EmptyPint =>
-      log.info("I think you're done for the day")
+        log.info(s"Pint $number is ready, here you go [${sender.path}]")
 
-      context.system.terminate()
+        sender ! FullPint(number)
+      }
+
+    case EmptyPint(number) =>
+      total match {
+        case 1 =>
+          log.info("Ya'll drank those pints quick, time to close up shop")
+
+          context.system.terminate()
+
+        case _ =>
+          total = total - 1
+
+          log.info(s"You drank pint $number quick, but there are still $total pints left")
+      }
   }
 }

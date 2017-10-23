@@ -2,13 +2,13 @@ import akka.actor.{Actor, ActorLogging}
 
 class Person extends Actor with ActorLogging {
   def receive = {
-    case FullPint =>
-      log.info("I'll make short work of this")
+    case FullPint(number) =>
+      log.info(s"I'll make short work of pint $number")
 
       Thread.sleep(1000)
 
-      log.info("I'm ready for the next")
+      log.info(s"Done, here is the empty glass for pint $number")
 
-      sender ! EmptyPint
+      sender ! EmptyPint(number)
   }
 }
