@@ -1,5 +1,9 @@
-import akka.actor.{ActorSystem, Props}
+package bar
+
 import java.util.concurrent.TimeUnit._
+
+import akka.actor.{ActorSystem, Props}
+
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 

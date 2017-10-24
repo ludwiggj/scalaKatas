@@ -1,3 +1,5 @@
+package bar
+
 import akka.actor.{Actor, ActorLogging}
 
 class Person extends Actor with ActorLogging {
