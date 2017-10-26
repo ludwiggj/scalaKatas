@@ -82,6 +82,14 @@ object WizardTests extends TestSuite {
         }
       }
 
+      "twenty-two mixtures" - {
+        "smoke for twenty-two mixtures" - {
+          smoke = wizard.mix(1 to 22 map (_ * 3) toList)
+          smoke ==> 24763
+          smoke
+        }
+      }
+
       // NOTE - The algorithm struggles above 20 mixtures
       // Solve using concurrency; for example, see:
 

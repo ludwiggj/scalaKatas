@@ -12,7 +12,7 @@ class FactorialCollector(factorials: List[Int]) extends Actor with ActorLogging 
 
   def receive = {
     case (num: Int, fac: BigInt) => {
-      log.info(s"factorial for $num is $fac")
+//      log.info(s"factorial for $num is $fac")
 
       list = num :: list
       size -= 1
