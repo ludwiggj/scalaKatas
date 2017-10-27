@@ -2,12 +2,6 @@ package org.ludwiggj.mixtures
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 
-case class Position(value: Option[Int])
-
-case class Result(position: Position, smoke: Option[Int]) {
-  def positionValue() = position.value.get
-}
-
 case class Mix(position: Position)
 
 class Experiment(data: ExperimentData, pocketBook: ActorRef) extends Actor with ActorLogging {
@@ -44,14 +38,11 @@ class Experiment(data: ExperimentData, pocketBook: ActorRef) extends Actor with 
           clientPosition = position
           results = List.fill(mixtures.size - 1)(None)
 
-//          log.info(s"START! data [$data], results [$results], size [${results.size}]")
-
           nextExperiments = (0 to mixtureList.size - 2).toList map { i =>
             val leadingMixtures = mixtureList take i
             val (thisMix, thisSmoke) = mixPair(mixtures, i)
             val trailingMixtures = mixtureList drop i + 2
 
-            //            log.info(s"Exp: (mix[$mixtures], smoke: [$smoke]), index [$i] => Exp: (mix[${leadingMixtures ++ List(thisMix) ++ trailingMixtures}], smoke: [${smoke + thisSmoke}])")
             ExperimentData(leadingMixtures ++ List(thisMix) ++ trailingMixtures, smoke + thisSmoke)
           }
 
@@ -67,7 +58,6 @@ class Experiment(data: ExperimentData, pocketBook: ActorRef) extends Actor with 
     }
 
     case (conductExperiment: Boolean, position: Int) => {
-//      log.info(s"conductExperiment [$conductExperiment] position [$position]")
       if (conductExperiment) {
         context.actorOf(Props(new Experiment(nextExperiments(position), pocketBook))) ! Mix(Position(Some(position)))
       } else {
@@ -79,8 +69,6 @@ class Experiment(data: ExperimentData, pocketBook: ActorRef) extends Actor with 
   def updateResult(position: Int, result: Option[Int]): Unit = {
     resultCount = resultCount + 1
     results = results.updated(position, result)
-
-//    log.info(s"RESULT! data [$data], results [$results], resultCount [$resultCount]")
 
     if (resultCount == results.size) {
       val smokeResults = results.filter(_.isDefined)
