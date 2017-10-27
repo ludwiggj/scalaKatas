@@ -1,41 +1,52 @@
 package org.ludwiggj.mixtures
 
-case class Experiment(mixtures: List[Int], pocketBook: PocketBook, smoke: Int = 0) {
-  def mix(): Option[Int] = {
-    if (pocketBook.continueExperiment(this)) {
-//      println(s"+++ Experiment $this")
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+
+class Experiment(mixtures: List[Int], smoke: Int = 0, val level: Int = 0) extends Actor with ActorLogging {
+  var results: List[Int] = null
+  var client: ActorRef = null
+  var clientPos: Int = -1
+
+//  log.info(s"Experiment: mixtures [$mixtures], smoke: [$smoke], level: [$level]")
+
+  private def mixPair(mixtures: List[Int], i: Int): (Int, Int) = {
+    ((mixtures(i) + mixtures(i + 1)) % 100, mixtures(i) * mixtures(i + 1))
+  }
+
+  override def receive = {
+    case (position: Int) => {
+      client = sender
       mixtures match {
-        case Nil => None
-        case _ :: Nil => {
-//          println(s"********* Result $smoke")
-          Some(smoke)
+        case Nil => sender ! (position, 0)
+        case mix :: Nil => {
+//                    log.info(s"Single item in list [$mix]")
+          sender ! (position, smoke)
         }
         case mixtureList => {
-          val list = {
-            (0 to mixtureList.size - 2).toList map { i =>
-              val leadingMixtures = mixtureList take i
-              val (thisMix, thisSmoke) = mixPair(i)
-              val trailingMixtures = mixtureList drop i + 2
+          clientPos = position
+          results = List.fill(mixtures.size - 1)(-1)
 
-//              println(s">>>>>> Processing [$leadingMixtures, (${mixtureList(i)} + ${mixtureList(i + 1)}), $trailingMixtures]")
-              this.copy(mixtures = leadingMixtures ++ List(thisMix) ++ trailingMixtures, smoke = smoke + thisSmoke).mix()
-            }
-          }
+          (0 to mixtureList.size - 2).toList foreach { i =>
+            val leadingMixtures = mixtureList take i
+            val (thisMix, thisSmoke) = mixPair(mixtures, i)
+            val trailingMixtures = mixtureList drop i + 2
 
-//          println(s"--------- Results $list")
+//            log.info(s"Exp: (mix[$mixtures], smoke: [$smoke], lev: [$level]), index [$i] => Exp: (mix[${leadingMixtures ++ List(thisMix) ++ trailingMixtures}], smoke: [${smoke + thisSmoke}], lev: [${level + 1}])")
 
-          list.filter(_.isDefined) match {
-            case l if l.size > 0 => l.min
-            case _ => None
+            context.actorOf(Props(
+              new Experiment(leadingMixtures ++ List(thisMix) ++ trailingMixtures, smoke = smoke + thisSmoke, level = level + 1)
+            )) ! i
           }
         }
       }
-    } else {
-      return None
     }
-  }
 
-  private def mixPair(i: Int): (Int, Int) = {
-    ((mixtures(i) + mixtures(i + 1)) % 100, mixtures(i) * mixtures(i + 1))
+    case (position: Int, result: Int) => {
+      results = results.updated(position, result)
+      if (!results.contains(-1)) {
+        //        log.info(s">>>>>>> result: level [$level] result [${results.min}]")
+        client ! (clientPos, results.min)
+      }
+    }
   }
 }
